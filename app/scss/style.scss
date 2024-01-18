@@ -189,11 +189,19 @@ svg {
 
     &__wrapper {
         display: flex;
+        justify-content: space-between;
+        padding: rem(20px) 0;
+        align-items: center;
     }
 
     &__navbar-list {
         display: flex;
 
+        gap: 20px;
+    }
+
+    &__navbar-item {
+        font-size: rem(20px);
     }
 }
 
