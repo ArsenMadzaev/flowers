@@ -5,10 +5,13 @@ const app = function () {
             // Тут подключаются функции
                 app.Submenu(),
                 app.MobMenu(),
-                app.FeedbackFormEvent(),
+                app.arrowTop(),
                 app.ClickOutside(),
                 app.FeedbackForm(),
-                app.GcaptchaRender()
+                app.Accordion(),
+                app.ScrollHeaderFix(),
+                app.ScrolltoObject()
+                // app.PopupInit('popupFeedback')
         },
 
         // Показать BackGround
@@ -19,6 +22,14 @@ const app = function () {
         // Скрыть Background
         BackgroundHide: () => {
             body.classList.remove('popup__show');
+        },
+
+        arrowTop: () => {
+            window.addEventListener('scroll', app.Throttle(() => {
+                window.scrollY > 500
+                    ? body.classList.add('show__arrow')
+                    : body.classList.remove('show__arrow')
+            }, 300))
         },
 
         // Работа с Background при вызове SubMenu
@@ -38,19 +49,17 @@ const app = function () {
         
         // Работа с мобильным меню
         MobMenu: () => {
-            let item__open = document.querySelector('.header__menu-button');
-            let item__close = document.querySelector('.mobile-menu__close');
-            let mobileMenuItems = document.querySelectorAll('.mobile-menu__link');
-
-            Array.from(mobileMenuItems).forEach((item) => {
-                item.addEventListener('click', app.MobMenuClose);
-            })
-
+            let item__open = document.querySelector('.header__mobile-burger');
+           
             if(item__open){
-                item__open.addEventListener('click', app.MobMenuOpen);
-            }
-            if(item__close){
-                item__close.addEventListener('click', app.MobMenuClose);
+                item__open.addEventListener('click', () => {
+                    item__open.classList.toggle('header__mobile-burger--active');
+                    if (item__open.classList.contains('header__mobile-burger--active')) {
+                        app.MobMenuOpen();
+                    } else {
+                        app.MobMenuClose();
+                    }
+                });
             }
         },
 
@@ -66,37 +75,66 @@ const app = function () {
             app.UnlockScreen();
         },
 
-        // Закрываем мобильное меню
-        GcaptchaRender: () => {
-            const captchaItems = {
-                items: [
-                  document.querySelector("#g-recatpcha-pricing"),
-                ],
-            };
-            setTimeout(function () {
-                if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render ==='undefined') {
-                    app.GcaptchaRender();
-                } else {
-                    if (captchaItems.items.length > 0) {
-                        for (i = 0; i < captchaItems.items.length; i++) {
-                          if (!captchaItems.items[i]) continue;
-                          let item = captchaItems.items[i];
-                          window.item = grecaptcha.render(item, {
-                            sitekey: "6Lev1yopAAAAAEpsW1GVcQ3aNKe4HZ6YKQp-oh-3",
-                            // 'callback': function (response) {
-                            //   console.log(response)
-                            //   // app.Captcha.WordCallback(response, item)
-                            // },
-                            theme: "light",
-                          });
-                          item.dataset.captchaId = window.item;
-                        }
-                    }
+        /**
+         * Инициализрует popup окно которое следует стандартной HTML структуре
+         * @param {string} popupId - ID попап элемента
+        */
+        PopupInit: (popupId) => {
+            let popup = document.querySelector(`#${popupId}`);
+            if (popupId) {
+                let openBtns = document.querySelectorAll(`button[data-button-for-id="${popupId}"]`);
+                closeBtn = popup.querySelector('.popup__close');
+
+                openBtns.forEach((openButton) => {
+                    openButton.addEventListener('click', (e) => {
+                        popup.style.display = 'block';
+                        app.BackgroundShow();
+                        app.LockScreen();
+                    });
+                });
+
+                closeBtn.addEventListener('click', (e) => {
+                    popup.removeAttribute('style');
+                    app.BackgroundHide();
+                    app.UnlockScreen();
+                });
+            }
+        },
+        
+        /**
+         * Удаляет определенный класс у всех элементов ноды
+         * @param {object} listNode - Массив или объект элементов
+         * @param {string} className - Имя класса
+        */
+        ResetClassOnListItems: (listNode, className) => {
+            try {
+                arrayList = Array.from(listNode);
+                for (select of arrayList) {
+                    select.classList.remove(className);
                 }
-            }.bind(this), 100);
+            }
+            catch(e) {
+                console.error(e);
+            }
         },
 
-        
+        /**
+         * Устанавливает определенный aria атрибут всем элементам ноды 
+         * @param {object} listNode - Массив или объект элементов
+         * @param {string} ariaAtr - Aria атрибут
+         * @param {string} ariaValue - Значение aria атрибута
+        */
+        SetAriaAtrOnListItems: (listNode, ariaAtr, ariaValue) => {
+            try {
+                arrayList = Array.from(listNode);
+                for (select of arrayList) {
+                    select.setAttribute(ariaAtr, ariaValue);
+                }
+            }
+            catch(e) {
+                console.error(e);
+            }
+        },
 
         // Блочим скролл 
         LockScreen: () => {
@@ -127,177 +165,221 @@ const app = function () {
             }
         },
 
-        // Открываем мобильное меню
-        PopupOpen: () => {
-            body.classList.add('popup__show');
-            app.LockScreen();
-        },
-
-        // Закрываем мобильное меню
-        PopupClose: () => {
-            body.classList.remove('popup__show');
-            app.UnlockScreen();
-        },
-
-        // Работа с формой
-        FeedbackFormEvent: () => {
-            let popupClose = document.querySelector('.popup__close');
-            let formOpenBtns = document.querySelectorAll('.calc-btn');
-            const popupForm = document.querySelector('#popupForm');
-
-            Array.from(formOpenBtns).forEach((item) => {
-                
-                item.addEventListener('click', (e) => {
-                    popupForm.style.display = "block";
-                    app.PopupOpen();
-                });
-            })
-            if(popupClose){
-                popupClose.addEventListener('click',  (e) => {
-                    popupForm.style.display = "none";
-                    app.PopupClose();
-                });
+        //Фиксация хедера при скролле
+        ScrollHeaderFix: () => {
+            let header = document.querySelector('.header');
+            let offset = header.offsetHeight;
+            window.onscroll = function() {
+                if (window.scrollY > offset-10 && window.innerWidth <= 1200) {
+                    body.style.marginTop = header.offsetHeight + 'px';
+                    header.classList.add("header--fixed");
+                } else if(window.scrollY < offset-20) {
+                    body.style.marginTop = null;
+                    header.classList.remove("header--fixed");
+                }
             }
         },
 
-        // Форма заказа
+        // Форма аутентификации
+        Accordion: () => {
+            let accordionWrap = document.querySelector('.accordion__wrapper');
+            if(accordionWrap){
+                accordionItems = document.querySelectorAll('.accordion__item');
+                accordionItems.forEach((accordionItem) => {
+                    accordionItem.querySelector('.accordion__header').addEventListener('click', (e) => {
+                        accordionItem.classList.toggle('accordion__item--active');
+                    })
+                })
+
+            }
+        },
+
+        // Форма обратной связи
         FeedbackForm: () => {
-            const form = document.querySelector('form#feedBack');
-            if (form) {
-                let button = form.querySelector('button[type="submit"]');
-                let inputsForm = form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"])');
-                let areaText = form.querySelector('textarea');
-                let checkbox = form.querySelector('input[type="checkbox"]');
-                let formWrapper = form.parentElement;
+            const forms = document.querySelectorAll('[data-form="feedback"]');
 
-                [].forEach.call(document.querySelectorAll('.tel'), function (input) {
-                    let keyCode;
-                  
-                    function mask(event) {
-                      event.keyCode && (keyCode = event.keyCode);
-                      let pos = this.selectionStart;
-                  
-                      if (pos < 3) event.preventDefault();
-                  
-                      let matrix = "+7 (___)-___-__-__",
-                        i = 0,
-                        def = matrix.replace(/\D/g, ""),
-                        val = this.value.replace(/\D/g, ""),
-                        new_value = matrix.replace(/[_\d]/g, function (a) {
-                          return i < val.length ? val.charAt(i++) || def.charAt(i) : a;
-                        });
-                  
-                      i = new_value.indexOf("_");
-                  
-                      if (i != -1) {
-                        i < 5 && (i = 3);
-                        new_value = new_value.slice(0, i);
-                      }
-                  
-                      let reg = matrix
-                        .substr(0, this.value.length)
-                        .replace(/_+/g, function (a) {
-                          return "\\d{1," + a.length + "}";
-                        })
-                        .replace(/[+()]/g, "\\$&");
-                  
-                      reg = new RegExp("^" + reg + "$");
-                  
-                      if (
-                        !reg.test(this.value) ||
-                        this.value.length < 5 ||
-                        (keyCode > 47 && keyCode < 58)
-                      )
-                        this.value = new_value;
-                  
-                      if (event.type == "blur" && this.value.length < 5) this.value = "";
-                    }
-                  
-                    input.addEventListener("input", mask, false);
-                    input.addEventListener("focus", mask, false);
-                    input.addEventListener("blur", mask, false);
-                    input.addEventListener("keydown", mask, false);
-                  });
-                  
+            if (forms) {
+                forms.forEach((form) => {
+                    let button = form.querySelector('button[type="submit"]');
+                    let inputsForm = form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"])');
+                    let areaText = form.querySelector('textarea');
+                    let checkbox = form.querySelector('input[type="checkbox"]');
 
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if(app.FormControl(button)){
-                        button.disabled = true;
-                        (async () => {
-                            let sendData = new FormData(form);
-                            let form_result = form.querySelector('.form__result');
-
-                            let url = 'send.php'; 
-                            try{
-                            let response = await fetch(url, { 
-                                method: 'POST', 
-                                body: sendData,
-                                });
-
-                                let data = await response.json();
-                                
-                                //Сброс полей формы
-                                for(i=0; i < inputsForm.length; i++) {
-                                    inputsForm[i].value = '';
-                                }
-                                checkbox.checked = false;
-                                areaText.value = '';
-
-                                // Reset капчи.
-                                let captchaEl = document.querySelector('#g-recatpcha-pricing');
-                                captchaEl
-                                ? (grecaptcha.reset(captchaEl.dataset.captchaId), captchaEl.nextElementSibling.value = '')
-                                : '';
-                                
-                                if (data.status) {
-                                    button.disabled = false;
-                                    form.querySelector('.g-recaptcha') ? form.querySelector('.g-recaptcha').parentElement.remove() : '';
-                                    form_result.innerHTML = data.text;
-                                    formWrapper.innerHTML = '<div class="form-success"><h3>Спасибо за заявку!</h3><br><p>Мы свяжемся с вами в ближайшее время<p></div>'
-                                }
-                                if (!data.status) {
-                                    button.disabled = false;
-                                    form_result.innerHTML = data.text;
-                                }
-                                    
-                            } catch (error) {
-                                button.disabled = false;
-                                //Сброс полей формы
-                                for(i=0; i < inputsForm.length; i++) {
-                                    inputsForm[i].value = '';
-                                }
-                                checkbox.checked = false;
-                                areaText.value = '';
-                                //Состояния кнопки отправки
-                                form_result.textContent = `Ошибка - ${error}`;
-                            }
+                    app.FormValidate();
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if(app.FormControl(button)){
+                            let form_result = form.querySelector('.form-result');
+                            let sendData = new FormData(form);        
                             
-                        })();
-                    }
+                            button.classList.add('loading');
+                            button.setAttribute('disabled', '');
+                
+                            FetchRequest('test.php', sendData)
+                                .then(data => {
+                                    //Состояния кнопки отправки
+                                    button.classList.remove('loading');
+                                    button.removeAttribute('disabled');
+                                    //Сброс полей формы
+                                    for(i=0; i < inputsForm.length; i++) {
+                                        inputsForm[i].value = '';
+                                    }
+                                    checkbox.checked = 'false';
+                                    areaText.value = '';
+                                    //Если статус успешно
+                                    if (data.status) {
+                                    //Логика успешного статуса
+                                    }
+                                    //Если статус неудачно
+                                    if (!data.status) {
+                                        form_result.innerHTML = data.text;
+                                    }
+                                    
+                                })
+                                .catch(error => {
+                                    //Сброс полей формы
+                                    for(i=0; i < inputsForm.length; i++) {
+                                        inputsForm[i].value = '';
+                                    }
+                                    areaText.value = '';
+                                    checkbox.checked = 'false';
+                                    //Состояния кнопки отправки
+                                    button.classList.remove('loading');
+                                    button.removeAttribute('disabled');
+                                    form_result.textContent = `Ошибка - ${error}`;
+                                })
+                        }
+                    })
                 })
             }
         },
+
+        /**
+         * Функция для Fetch запросов. Ошибки нужно рендерить через .error запроса, либо вызывать try/catch при запросе
+         * @param {string} url - Адрес обработчика
+         * @param {string} data - Данные
+        */
+        FetchRequest: (url, data) => {
+            // Если это FormData.
+            if (data.constructor.name === "FormData") {
+            let FormData = Object.fromEntries(data.entries());
+            data = JSON.stringify(FormData);
+            } else {
+            data = JSON.stringify(data);
+            }
+            let RequestOptions = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: data,
+            };
+            return fetch(url, RequestOptions).then((response) => response.json());
+        },
+
+        //Функция валидации ввода
+        FormValidate: () => {
+            [].forEach.call(document.querySelectorAll('[type="phone"]'), function (input) {
+                let keyCode;
+              
+                function mask(event) {
+                  event.keyCode && (keyCode = event.keyCode);
+                  let pos = this.selectionStart;
+              
+                  if (pos < 3) event.preventDefault();
+              
+                  let matrix = "+7 (___)-___-__-__",
+                    i = 0,
+                    def = matrix.replace(/\D/g, ""),
+                    val = this.value.replace(/\D/g, ""),
+                    new_value = matrix.replace(/[_\d]/g, function (a) {
+                      return i < val.length ? val.charAt(i++) || def.charAt(i) : a;
+                    });
+              
+                  i = new_value.indexOf("_");
+              
+                  if (i != -1) {
+                    i < 5 && (i = 3);
+                    new_value = new_value.slice(0, i);
+                  }
+              
+                  let reg = matrix
+                    .substr(0, this.value.length)
+                    .replace(/_+/g, function (a) {
+                      return "\\d{1," + a.length + "}";
+                    })
+                    .replace(/[+()]/g, "\\$&");
+              
+                  reg = new RegExp("^" + reg + "$");
+              
+                  if (
+                    !reg.test(this.value) ||
+                    this.value.length < 5 ||
+                    (keyCode > 47 && keyCode < 58)
+                  )
+                    this.value = new_value;
+              
+                  if (event.type == "blur" && this.value.length < 5) this.value = "";
+                }
+              
+                ['input', 'focus', 'blur', 'keydown'].forEach((event) => input.addEventListener(event, mask, false));
+            });
+
+            [].forEach.call(document.querySelectorAll('[type="text"]'), function (input) {
+                let keyCode;
+            
+                function mask(event) {
+                    event.keyCode && (keyCode = event.keyCode);
+                    let pos = this.selectionStart;
+            
+                    if (pos < 3 && event.key.length === 1 && !event.key.match(/[а-яА-Я]/)) {
+                        event.preventDefault();
+                        return;
+                    }
+            
+                    let val = this.value.replace(/[^а-яА-Я]/g, ""); // Только русские буквы
+            
+                    if (val.length > 0) {
+                        this.value = val;
+                    } else if (event.type == "blur" && this.value.length < 5) {
+                        this.value = "";
+                    }
+                }
+            
+                ['input', 'focus', 'blur', 'keydown'].forEach((event) => input.addEventListener(event, mask, false));
+            });
+        },
         
-        // Для проверки форм (Если обратить внимание, то он находит родителей кнопки). Семантика обязательно должна быть соблюдена!!!
+        /**
+         * Для проверки форм (Если обратить внимание, то он находит родителей кнопки). Семантика обязательно должна быть соблюдена!!!
+         * @param {object} itemSubmit - Элемент отправки формы
+        */
         FormControl: (item__submit) => {
             let result = [],
                 find__error = false
             let children = item__submit.closest('form');
-            
+
             for (i = 0; i < children.length; i++) {
                 if (children[i].hasAttribute('required')) {
                     if (children[i].value === '') {
-                        children[i].classList.add('error');
+                      
+                        children[i].parentNode.classList.add('error');
                         result += false;
-                        
+                    }
+                    else if (children[i].type === 'phone' && children[i].value.length < 18) {
+                        children[i].parentNode.classList.add('error');
+                        result += false;
+                    }
+                    else if (children[i].type === 'email' && !(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(String(children[i].value).toLowerCase()))) {
+                        children[i].parentNode.classList.add('error');
+                        result += false;
                     }
                     else if (children[i].type === 'checkbox' && !children[i].checked) {
-                        children[i].classList.add('error');
+                        children[i].parentNode.classList.add('error');
                         result += false;
                     }
                     else {
-                        children[i].classList.remove('error');
+                        children[i].parentNode.classList.remove('error');
                         result += true;
                     }
                 }
@@ -319,6 +401,61 @@ const app = function () {
             return check;
         },
         
+        // стандартный smooth скролл до объекта.
+        ScrolltoObject: () => {
+            let items = document.querySelectorAll('[data-scroll]');
+            for (i = 0; i < items.length; i++) {
+                let item = items[i];
+                item.addEventListener('click', (e) => {
+                    let link = item.dataset.scroll;
+                    if (link === 'this') {
+                        e.target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                    else {
+                        document.querySelector(link).scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+
+                })
+            }
+        },
+
+        // Игнорирует вызовы передаваемой функции пока не пройдет определенное ожидание
+        Throttle: (func, ms) => {
+            let locked = false
+            return function () {
+                if (locked) return
+                const context = this
+                const args = arguments
+                locked = true
+                setTimeout(() => {
+                    func.apply(context, args)
+                    locked = false
+                }, ms)
+
+            }
+        },
+        
+        // Игнорирование вызовов передаваемой функции (resize, scroll, keydown)
+        Debounce: function (func, ms, now) {
+            let onLast
+            return function () {
+                const context = this
+                const args = arguments
+                const onFirst = now && !onLast
+                clearTimeout(onLast)
+                onLast = setTimeout(() => {
+                    onLast = null
+                    if (!now) func.apply(context, args)
+                }, ms)
+                if (onFirst) func.apply(context, args)
+            }
+        },
     }
 }();
 
@@ -326,59 +463,4 @@ document.addEventListener('DOMContentLoaded', () => {
     'use strict';
     app.init();
 });
-
-
-//sliders init
-const mainSlider = new Swiper('.product-slider .swiper', {
-    slidesPerView: 1,
-    spaceBetween: 20,
-    
-    loop: true,
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-
-    preloadImages: false,
-    lazy: true,
-    lazy: {
-        loadPrevNext: true, 
-        loadPrevNextAmount: 2,
-    },
-
-    watchSlidesProgress: true,
-
-    watchSlidesVisibility: true,
-
-    breakpoints: {
-      // Добавьте дополнительные настройки для разных разрешений экрана
-      576: {
-        slidesPerView: 2,
-      },
-
-      992: {
-        slidesPerView: 3,
-      },
-
-      1200: {
-        slidesPerView: 4,
-      },
-
-      1400: {
-        slidesPerView: 5,
-      },
-
-      1600: {
-        slidesPerView: 6,
-      },
-    },
-});
-
-Fancybox.bind('[data-fancybox]', {
-   
-});    
 

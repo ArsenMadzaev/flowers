@@ -28,6 +28,7 @@ $green: #36D759 !default;
 $darkGreen: #18B94F !default;
 $lilac: #4832B0 !default;
 $coral: #FA9688 !default;
+$blackBody: #0d1117 !default;
 
 // Цвета для генерации
 $colors: (
@@ -41,6 +42,7 @@ $colors: (
 "darkGreen": $darkGreen,
 "lilac": $lilac,
 "coral": $coral,
+"blackBody": $blackBody,
 ) !default;
 // Для геренации font-face
 $font-face: (

@@ -14,7 +14,7 @@ body {
 }
 
 body {
-    background: #0d1117;
+    @include color(background-color, blackBody);
     font-family: 'Gilroy', sans-serif;
     @include color(color, whiteTextColor);
     font-size: 14px;
@@ -64,7 +64,7 @@ body {
 
     &.show__navbar {
         .overlay-blur {
-            z-index: 102;
+            z-index: 97;
             opacity: 1;
             visibility: visible;
             transition-timing-function: ease-in-out, step-start;
@@ -87,38 +87,49 @@ body {
     left: 100vw;
     overflow-y: auto;
     width: 100%;
-    background-color: #fff;
+    @include color(background-color, blackBody);
     transition: transform .5s ease,width .5s ease;
-    z-index: 103;
+    z-index: 99;
     overflow: hidden;
     display: flex;
     margin: 0;
     flex-direction: column;
 
     &__wrapper {
-        transition: transform 0.9s ease-in-out;
         height: 100%;
-        padding: rem(30px);
-    }
-
-    &__head {
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
         align-items: center;
-    }
-
-    &__close {
-        cursor: pointer;
-        @include color(color, black);
-
-        &:hover {
-            @include color(color, pink);
-        }
+        transition: transform 0.9s ease-in-out;
+        padding: rem(60px) rem(30px);
+        
     }
 
     &__link {
-        display: block;
-        width: 100%;
+        position: relative;
+
+        &::before {
+            position: absolute;
+            content: '';
+            display: block;
+            height: 2px;
+            width: 0;
+            @include color(background-color, pink);
+            left: 50%;
+            top: 25px;
+            transform: translate(-50%,0) translateZ(0);
+            transition: width .25s cubic-bezier(.27,.62,.43,1.01);
+        }
+
+        &:hover {
+            @include color(color, pink);
+            cursor: pointer;
+        }
+
+        &:hover::before {
+            width: 100%;
+        }
     }
 
     &__items {
@@ -131,35 +142,20 @@ body {
         font-size: rem(17px);
         line-height: 20px;
         font-weight: 400;
-
-        &:hover {
-            @include color(color, pink);
-        }
-    }
-
-    &__title {
-        font-size: rem(22px);
-        line-height: 25px;
-        font-weight: 400;
-    }
-
-    &__body {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: rem(30px) 0;
-        height: 100%;
+        text-align: center;
     }
 
     &__social {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: rem(10px);
     }
 
     &__social-item {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: rem(5px);
 
         &--subtitle {
@@ -172,10 +168,6 @@ body {
     }
 
     @include media("min", "md") {
-        width: 31.25rem;
-    }
-
-    @include media("min", "xl") {
         display: none;
     }
 }
@@ -187,6 +179,11 @@ svg {
 //header
 .header {
 
+    &--fixed {
+        position: fixed;
+        width: 100%;
+    }
+
     &__wrapper {
         display: flex;
         justify-content: space-between;
@@ -196,13 +193,86 @@ svg {
 
     &__navbar-list {
         display: flex;
+        gap: rem(20px);
+    }
 
-        gap: 20px;
+    &__navbar {
+        display: none;
+
+        @include media("min", "md") {
+            display: block;
+        }
     }
 
     &__navbar-item {
+        position: relative;
         font-size: rem(20px);
+
+        & a::before {
+            position: absolute;
+            content: '';
+            display: block;
+            height: 2px;
+            width: 0;
+            @include color(background-color, pink);
+            left: 50%;
+            top: 25px;
+            transform: translate(-50%,0) translateZ(0);
+            transition: width .25s cubic-bezier(.27,.62,.43,1.01);
+        }
+
+        & a:hover {
+            @include color(color, pink);
+            cursor: pointer;
+        }
+
+        & a:hover::before {
+            width: 100%;
+        }
     }
+
+    &__mobile-burger {
+        position: relative;
+        border: 0;
+        z-index: 101;
+        background-color: transparent;
+        padding: 0 rem(5px);
+        overflow: hidden;
+
+        @include media("min", "md") {
+            display: none;
+        }
+    }
+
+    &__mobile-burger--active > &__burger-item:first-child {
+        transform: rotate(45deg);
+        transition: 0.5s;
+        transform-origin: 5px 3px;
+    }
+
+    &__mobile-burger--active > &__burger-item:last-child {
+        transform: rotate(-45deg);
+        transition: 0.5s;
+        transform-origin: 6px 1px;
+    }
+
+    &__mobile-burger--active > &__burger-item:nth-child(2) {
+        position: absolute;
+        top: 45%;
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    &__burger-item {
+        display: block;
+        width: rem(20px);
+        height: rem(3px);
+        margin: rem(4px) auto;
+        @include color(background-color, white);
+        transition: 0.5s;
+    }
+
+
 }
 
 .main {
