@@ -168,7 +168,9 @@ const app = function () {
         //Фиксация хедера при скролле
         ScrollHeaderFix: () => {
             let header = document.querySelector('.header');
-            let offset = header.offsetHeight;
+
+            let offset = document.querySelector('.main-banner').offsetHeight ;
+            console.log(offset);
             window.onscroll = function() {
                 if (window.scrollY > offset-10 && window.innerWidth <= 1200) {
                     body.style.marginTop = header.offsetHeight + 'px';

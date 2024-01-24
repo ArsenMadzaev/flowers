@@ -87,7 +87,8 @@ body {
     left: 100vw;
     overflow-y: auto;
     width: 100%;
-    @include color(background-color, blackBody);
+    background-color: #171b22;
+    //@include color(background-color, blackBody);
     transition: transform .5s ease,width .5s ease;
     z-index: 99;
     overflow: hidden;
@@ -102,7 +103,7 @@ body {
         justify-content: space-between;
         align-items: center;
         transition: transform 0.9s ease-in-out;
-        padding: rem(60px) rem(30px);
+        padding: rem(75px) rem(30px);
         
     }
 
@@ -178,10 +179,17 @@ svg {
 
 //header
 .header {
+    z-index: 101;
 
     &--fixed {
+        background-color: #171b22;
         position: fixed;
         width: 100%;
+        top: 0;
+
+        & .header__wrapper {
+            padding: rem(14px) 0;
+        }
     }
 
     &__wrapper {
@@ -276,6 +284,12 @@ svg {
 }
 
 .main {
+    
+    .main-banner {
+        &__title {
+            font-family: 'Pacifico';
+        }
+    }
     
 }
 
