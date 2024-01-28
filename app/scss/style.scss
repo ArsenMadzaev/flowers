@@ -87,7 +87,7 @@ body {
     left: 100vw;
     overflow-y: auto;
     width: 100%;
-    background-color: #171b22;
+    @include color(background-color, liteDark);
     //@include color(background-color, blackBody);
     transition: transform .5s ease,width .5s ease;
     z-index: 99;
@@ -109,6 +109,7 @@ body {
 
     &__link {
         position: relative;
+        transition: 0.25s;
 
         &::before {
             position: absolute;
@@ -116,7 +117,7 @@ body {
             display: block;
             height: 2px;
             width: 0;
-            @include color(background-color, pink);
+            @include color(background-color, purple);
             left: 50%;
             top: 25px;
             transform: translate(-50%,0) translateZ(0);
@@ -124,7 +125,7 @@ body {
         }
 
         &:hover {
-            @include color(color, pink);
+            @include color(color, purple);
             cursor: pointer;
         }
 
@@ -180,9 +181,11 @@ svg {
 //header
 .header {
     z-index: 101;
+    position: absolute;
+    width: 100%;
 
     &--fixed {
-        background-color: #171b22;
+        @include color(background-color, liteDark);
         position: fixed;
         width: 100%;
         top: 0;
@@ -192,11 +195,25 @@ svg {
         }
     }
 
+    &__logo {
+        flex: 1;
+        animation: logoShow 2s ease-out forwards;
+    }
+
     &__wrapper {
         display: flex;
         justify-content: space-between;
         padding: rem(20px) 0;
         align-items: center;
+        gap: rem(15px);
+
+        & .btn {
+            display: none;
+
+            @include media("min", "md") {
+                display: block;
+            }
+        }
     }
 
     &__navbar-list {
@@ -214,7 +231,11 @@ svg {
 
     &__navbar-item {
         position: relative;
-        font-size: rem(20px);
+        @include font-size-get(navbar);
+
+        & a {
+            transition: 0.25s;
+        }
 
         & a::before {
             position: absolute;
@@ -222,7 +243,7 @@ svg {
             display: block;
             height: 2px;
             width: 0;
-            @include color(background-color, pink);
+            @include color(background-color, purple);
             left: 50%;
             top: 25px;
             transform: translate(-50%,0) translateZ(0);
@@ -230,7 +251,7 @@ svg {
         }
 
         & a:hover {
-            @include color(color, pink);
+            @include color(color, purple);
             cursor: pointer;
         }
 
@@ -286,24 +307,276 @@ svg {
 .main {
     
     .main-banner {
+        // background-image: url("../images/background.png");
+        // background-size: no-repeat;
+        // background-position: center;
+        // background-size: cover;
+  
+        
+        &__wrapper {
+            height: 100vh;
+
+            & img {
+                position: absolute;
+                width: rem(500px);
+            }
+        }
+
+        &__text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            
+        }
+
         &__title {
             font-family: 'Pacifico';
+            @include font-size-get(main-banner);
+            @include color(color, white);
+            text-shadow: 
+            0 0 10px rgba(white, .6),
+            0 0 20px rgba(white, .6),
+            0 0 22px rgba(white, .6),
+            0 0 40px rgba($neon, .6),
+            0 0 60px rgba($neon, .6),
+            0 0 80px rgba($neon, .6),
+            0 0 100px rgba($neon, .2),
+            0 0 120px rgba($neon, .2),
+            0 0 140px rgba($neon, .2);
+            animation: neon 2s infinite;
+            animation-timing-function: linear;
+        }
+
+        &__right {
+            top: 0;
+            right: 0;
+        }
+
+        &__left {
+            top: 0;
+            left: -260px;
         }
     }
     
 }
 
 .footer {
-    
+    @include color(background-color, liteDark);
+    &__wrapper { 
+        padding: rem(20px) 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: rem(20px);
+    }
+
+    &__social-bar {
+        display: flex;
+        justify-content: center;
+        gap: rem(10px);
+    }
+
+    &__social-item {
+        transition: 0.25s;
+
+        &:hover {
+            @include color(color, purple);
+        }
+    }
+
+    &__btn-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__items {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: rem(20px);
+        
+    }
+
+    &__item {
+        font-size: rem(14px);
+        transition: 0.25s;
+        text-align: center;
+
+        &:hover {
+            @include color(color, purple);
+        }
+
+        @include media("min", "md") {
+            font-size: rem(15px);
+        }
+    }
+
+    &__policy {
+        display: flex;
+        justify-content: center;
+    }
 }
 
-
 //----------BLOCKS-------------
+.policy-privacy {
+    font-size: rem(12px);
+    transition: 0.25s;
 
+    &:hover {
+        @include color(color, purple);
+    }
+
+    @include media("min", "md") {
+        font-size: rem(14px);
+    }
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 110;
+
+    &__title {
+        font-size: rem(35px);
+        line-height: rem(42px);
+        font-weight: 700;
+        @include color(color, white);
+        text-align: center;
+    }
+
+    &__subtitle {
+        font-size: rem(17px);
+        line-height: rem(20px);
+        font-weight: 400;
+        @include color(color, white);
+        text-align: center;
+        margin-bottom: rem(40px);
+    }
+
+    &__close {
+        cursor: pointer;
+    }
+
+    &__content {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        @include color(background-color, blue);
+        padding: rem(30px) rem(30px);
+        border-radius: rem(30px);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+
+        @include media("min", "md") {
+            padding: rem(45px) rem(120px);
+            max-width: rem(812px);
+        }
+
+        @media only screen and (max-height: 670px) {
+            overflow-y: scroll;
+            height: 100%;
+        }
+    }
+
+    & .popup__close {
+        z-index: 2;
+        font-size: 22px;
+        font-weight: 500;
+        color: #000;
+        position: absolute;
+        display: block;
+        right: 20px;
+        top: 15px;
+        left: auto;
+
+        @include media("min", "sm") {
+            right: 25px;
+            top: 20px;
+        }
+    }
+
+    & .popup__close:before {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 20px;
+        background-image: url('data:image/svg+xml,<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.999902 30.9991L30.999 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M0.999904 1.00094L30.999 31" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>');
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+
+        @include media("min", "sm") {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+}
 
 //button blocks
+.btn {
+    background-color: transparent;
+    padding: rem(10px) rem(10px);
+    border: 1px solid white;
+    border-radius: rem(5px);
+    transition: 0.25s;
 
+    &:hover {
+        border: 1px solid $purple;
+    }
+}
 //button blocks end
+
+@keyframes logoShow {
+    0% {
+        filter: grayscale(1);
+    }
+
+    35% {
+        filter: grayscale(1);
+    }
+
+    100% {
+        filter: grayscale(0);
+    }
+}
+
+@keyframes neon {
+    0% {
+        opacity: 0.7;
+    }
+
+    45% {
+        opacity: 0.8;
+    }
+
+    55% {
+        opacity: 0.9;
+    }
+
+    60% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 0.9;
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
+}
+
 
 
 //----------BLOCKS END-------------
