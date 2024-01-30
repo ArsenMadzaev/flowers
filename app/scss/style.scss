@@ -183,6 +183,7 @@ svg {
     z-index: 101;
     position: absolute;
     width: 100%;
+    @include color(background-color, blackBody);
 
     &--fixed {
         @include color(background-color, liteDark);
@@ -307,10 +308,10 @@ svg {
 .main {
     
     .main-banner {
-        // background-image: url("../images/background.png");
-        // background-size: no-repeat;
-        // background-position: center;
-        // background-size: cover;
+        background-image: url("../images/background.png");
+        background-size: no-repeat;
+        background-position: center;
+        background-size: 400px;
   
         
         &__wrapper {
